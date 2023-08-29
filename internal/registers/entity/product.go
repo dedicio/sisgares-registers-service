@@ -5,8 +5,12 @@ import (
 )
 
 type ProductRepository interface {
-	Create(product *Product) error
+	FindById(id string) (*Product, error)
 	FindAll() ([]*Product, error)
+	Create(product *Product) error
+	Update(product *Product) error
+	Delete(id string) error
+	FindByCategoryId(categoryId string) ([]*Product, error)
 }
 
 type Product struct {

@@ -1,16 +1,16 @@
 package usecase
 
-import "github.com/dedicio/sisgares-registers-service/internal/domain/entity"
+import "github.com/dedicio/sisgares-registers-service/internal/registers/entity"
 
 type ListProductsOutputDto struct {
-	ID          string
-	Name        string
-	Description string
-	Price       float64
-	Image       string
-	CategoryId  string
-	Tags        []string
-	CompanyId   string
+	ID          string   `json:"id"`
+	Name        string   `json:"name"`
+	Description string   `json:"description"`
+	Price       float64  `json:"price"`
+	Image       string   `json:"image"`
+	CategoryId  string   `json:"category_id"`
+	Tags        []string `json:"tags"`
+	CompanyId   string   `json:"company_id"`
 }
 
 type ListProductsUseCase struct {
