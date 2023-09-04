@@ -19,9 +19,9 @@ func NewRoutes(db *sql.DB) *Routes {
 
 func (routes Routes) Routes() chi.Router {
 	router := chi.NewRouter()
-	productRepository := repository.NewProductRepositoryPostgresql(routes.DB)
+	productRepository := repository.NewProductRepositoryMysql(routes.DB)
 
-	router.Route("v1", func(router chi.Router) {
+	router.Route("/v1", func(router chi.Router) {
 		router.Mount("/products", NewProductRoutes(productRepository).Routes())
 	})
 

@@ -13,6 +13,17 @@ type ProductRepository interface {
 	FindByCategoryId(categoryId string) ([]*Product, error)
 }
 
+type Category struct {
+	ID        string `json:"id"`
+	Name      string `json:"name"`
+	CompanyId string `json:"company_id"`
+}
+type Tag struct {
+	ID        string `json:"id"`
+	Name      string `json:"name"`
+	CompanyId string `json:"company_id"`
+}
+
 type Product struct {
 	ID          string   `json:"id"`
 	Name        string   `json:"name"`
