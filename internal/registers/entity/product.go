@@ -1,7 +1,7 @@
 package entity
 
 import (
-	"github.com/google/uuid"
+	"github.com/dedicio/sisgares-registers-service/pkg/utils"
 )
 
 type ProductRepository interface {
@@ -18,21 +18,15 @@ type Category struct {
 	Name      string `json:"name"`
 	CompanyId string `json:"company_id"`
 }
-type Tag struct {
-	ID        string `json:"id"`
-	Name      string `json:"name"`
-	CompanyId string `json:"company_id"`
-}
 
 type Product struct {
-	ID          string   `json:"id"`
-	Name        string   `json:"name"`
-	Description string   `json:"description"`
-	Price       float64  `json:"price"`
-	Image       string   `json:"image"`
-	CategoryId  string   `json:"category_id"`
-	Tags        []string `json:"tags"`
-	CompanyId   string   `json:"company_id"`
+	ID          string  `json:"id"`
+	Name        string  `json:"name"`
+	Description string  `json:"description"`
+	Price       float64 `json:"price"`
+	Image       string  `json:"image"`
+	CategoryId  string  `json:"category_id"`
+	CompanyId   string  `json:"company_id"`
 }
 
 func NewProduct(
@@ -41,17 +35,16 @@ func NewProduct(
 	price float64,
 	image string,
 	categoryId string,
-	tags []string,
 	companyId string,
 ) *Product {
+	id := utils.NewUUID()
 	return &Product{
-		ID:          uuid.New().String(),
+		ID:          id,
 		Name:        name,
 		Description: description,
 		Price:       price,
 		Image:       image,
 		CategoryId:  categoryId,
-		Tags:        tags,
 		CompanyId:   companyId,
 	}
 }

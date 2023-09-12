@@ -22,7 +22,6 @@ func (uc *CreateProductUseCase) Execute(input dto.ProductDto) (*dto.ProductDto, 
 		input.Price,
 		input.Image,
 		input.CategoryId,
-		input.Tags,
 		input.CompanyId,
 	)
 
@@ -38,7 +37,6 @@ func (uc *CreateProductUseCase) Execute(input dto.ProductDto) (*dto.ProductDto, 
 		Price:       product.Price,
 		Image:       product.Image,
 		CategoryId:  product.CategoryId,
-		Tags:        product.Tags,
 	}
 
 	return output, nil

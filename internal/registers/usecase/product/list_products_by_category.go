@@ -30,7 +30,6 @@ func (uc ListProductsByCategoryUseCase) Execute(categoryId string) ([]*dto.Produ
 			Price:       product.Price,
 			Image:       product.Image,
 			CategoryId:  product.CategoryId,
-			Tags:        product.Tags,
 		})
 	}
 

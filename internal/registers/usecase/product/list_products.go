@@ -30,7 +30,6 @@ func (uc ListProductsUseCase) Execute() ([]*dto.ProductResponseDto, error) {
 			Price:       product.Price,
 			Image:       product.Image,
 			CategoryId:  product.CategoryId,
-			Tags:        product.Tags,
 		})
 	}
 
