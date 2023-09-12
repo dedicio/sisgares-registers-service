@@ -1,17 +1,9 @@
 package usecase
 
-import "github.com/dedicio/sisgares-registers-service/internal/registers/entity"
-
-type ListProductsOutputDto struct {
-	ID          string   `json:"id"`
-	Name        string   `json:"name"`
-	Description string   `json:"description"`
-	Price       float64  `json:"price"`
-	Image       string   `json:"image"`
-	CategoryId  string   `json:"category_id"`
-	Tags        []string `json:"tags"`
-	CompanyId   string   `json:"company_id"`
-}
+import (
+	"github.com/dedicio/sisgares-registers-service/internal/registers/dto"
+	"github.com/dedicio/sisgares-registers-service/internal/registers/entity"
+)
 
 type ListProductsUseCase struct {
 	ProductRepository entity.ProductRepository
@@ -23,15 +15,15 @@ func NewListProductsUseCase(productRepository entity.ProductRepository) *ListPro
 	}
 }
 
-func (uc ListProductsUseCase) Execute() ([]*ListProductsOutputDto, error) {
+func (uc ListProductsUseCase) Execute() ([]*dto.ProductResponseDto, error) {
 	products, err := uc.ProductRepository.FindAll()
 	if err != nil {
 		return nil, err
 	}
 
-	var output []*ListProductsOutputDto
+	var output []*dto.ProductResponseDto
 	for _, product := range products {
-		output = append(output, &ListProductsOutputDto{
+		output = append(output, &dto.ProductResponseDto{
 			ID:          product.ID,
 			Name:        product.Name,
 			Description: product.Description,
@@ -39,7 +31,6 @@ func (uc ListProductsUseCase) Execute() ([]*ListProductsOutputDto, error) {
 			Image:       product.Image,
 			CategoryId:  product.CategoryId,
 			Tags:        product.Tags,
-			CompanyId:   product.CompanyId,
 		})
 	}
 
