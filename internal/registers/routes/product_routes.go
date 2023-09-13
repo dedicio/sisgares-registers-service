@@ -20,14 +20,14 @@ func (pr ProductRoutes) Routes() chi.Router {
 	router := chi.NewRouter()
 
 	router.Route("/", func(router chi.Router) {
-		router.Get("/{id}", pr.Controller.FindById)
-	})
+		router.Post("/", pr.Controller.Create)
 
-	router.Group(
-		func(r chi.Router) {
-			r.Use()
-		},
-	)
+		router.Route("/{id}", func(router chi.Router) {
+			router.Get("/", pr.Controller.FindById)
+			router.Delete("/", pr.Controller.Delete)
+			router.Put("/", pr.Controller.Update)
+		})
+	})
 
 	return router
 }

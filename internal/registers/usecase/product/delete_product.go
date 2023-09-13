@@ -14,6 +14,7 @@ func NewDeleteProductUseCase(productRepository entity.ProductRepository) *Delete
 
 func (uc *DeleteProductUseCase) Execute(id string) error {
 	err := uc.Repository.Delete(id)
+
 	if err != nil {
 		return err
 	}

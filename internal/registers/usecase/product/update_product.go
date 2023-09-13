@@ -1,17 +1,9 @@
 package usecase
 
-import "github.com/dedicio/sisgares-registers-service/internal/registers/entity"
-
-type UpdateProductInputDto struct {
-	ID          string   `json:"id"`
-	Name        string   `json:"name"`
-	Description string   `json:"description"`
-	Price       float64  `json:"price"`
-	Image       string   `json:"image"`
-	CategoryId  string   `json:"category_id"`
-	Tags        []string `json:"tags"`
-	CompanyId   string   `json:"company_id"`
-}
+import (
+	"github.com/dedicio/sisgares-registers-service/internal/registers/dto"
+	"github.com/dedicio/sisgares-registers-service/internal/registers/entity"
+)
 
 type UpdateProductUseCase struct {
 	Repository entity.ProductRepository
@@ -23,7 +15,7 @@ func NewUpdateProductUseCase(productRepository entity.ProductRepository) *Update
 	}
 }
 
-func (uc *UpdateProductUseCase) Execute(input UpdateProductInputDto) error {
+func (uc *UpdateProductUseCase) Execute(input dto.ProductDto) error {
 	product, err := uc.Repository.FindById(input.ID)
 	if err != nil {
 		return err
