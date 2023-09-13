@@ -64,7 +64,6 @@ func (pc *ProductController) Create(w http.ResponseWriter, r *http.Request) {
 		Price:       product.Price,
 		Image:       product.Image,
 		CategoryId:  product.CategoryId,
-		Tags:        product.Tags,
 	}
 	render.Render(w, r, httpResponsePkg.NewProductResponse(output))
 }
@@ -105,7 +104,6 @@ func (pc *ProductController) Update(w http.ResponseWriter, r *http.Request) {
 		Price:       product.Price,
 		Image:       product.Image,
 		CategoryId:  product.CategoryId,
-		Tags:        product.Tags,
 	}
 
 	render.Render(w, r, httpResponsePkg.NewProductResponse(output))

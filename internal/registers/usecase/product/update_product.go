@@ -26,7 +26,6 @@ func (uc *UpdateProductUseCase) Execute(input dto.ProductDto) error {
 	product.Price = input.Price
 	product.Image = input.Image
 	product.CategoryId = input.CategoryId
-	product.Tags = input.Tags
 	product.CompanyId = input.CompanyId
 
 	err = uc.Repository.Update(product)

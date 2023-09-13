@@ -29,6 +29,5 @@ func (uc FindProductByIdUseCase) Execute(id string) (*dto.ProductResponseDto, er
 		Price:       product.Price,
 		Image:       product.Image,
 		CategoryId:  product.CategoryId,
-		Tags:        product.Tags,
 	}, nil
 }
