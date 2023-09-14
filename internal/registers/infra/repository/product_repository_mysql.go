@@ -42,7 +42,6 @@ func (pr *ProductRepositoryMysql) FindById(id string) (*entity.Product, error) {
 		&product.CategoryId,
 		&product.CompanyId,
 	)
-	fmt.Println("erro no scan", err)
 
 	if err != nil {
 		return nil, err
@@ -52,7 +51,18 @@ func (pr *ProductRepositoryMysql) FindById(id string) (*entity.Product, error) {
 }
 
 func (pr *ProductRepositoryMysql) FindAll() ([]*entity.Product, error) {
-	sql := `SELECT * FROM products WHERE deleted_at IS NULL`
+	sql := `
+		SELECT
+			id,
+			name,
+			description,
+			price,
+			image,
+			category_id,
+			company_id 
+		FROM products 
+		WHERE deleted_at IS NULL
+	`
 	rows, err := pr.db.Query(sql)
 	if err != nil {
 		return nil, err
@@ -85,7 +95,31 @@ func (pr *ProductRepositoryMysql) FindAll() ([]*entity.Product, error) {
 }
 
 func (pr *ProductRepositoryMysql) Create(product *entity.Product) error {
-	sql := `INSERT INTO products (id, name, description, price, image, category_id, company_id) VALUES ($1, $2, $3, $4, $5, $6, $7)`
+	sql := `
+		INSERT INTO
+			products (
+				id,
+				name,
+				description,
+				price,
+				image,
+				category_id,
+				company_id,
+				created_at,
+				updated_at
+			)
+		VALUES (
+			?,
+			?,
+			?,
+			?,
+			?,
+			?,
+			?,
+			NOW(),
+			NOW()
+		)
+	`
 	_, err := pr.db.Exec(
 		sql,
 		product.ID,
@@ -97,6 +131,8 @@ func (pr *ProductRepositoryMysql) Create(product *entity.Product) error {
 		product.CompanyId,
 	)
 
+	fmt.Println("erro no sql", err)
+
 	if err != nil {
 		return err
 	}
@@ -105,7 +141,18 @@ func (pr *ProductRepositoryMysql) Create(product *entity.Product) error {
 }
 
 func (pr *ProductRepositoryMysql) Update(product *entity.Product) error {
-	sql := `UPDATE products SET name = $1, description = $2, price = $3, image = $4, category_id = $5, company_id = $6 WHERE id = $7`
+	sql := `
+		UPDATE products
+		SET
+			name = ?,
+			description = ?,
+			price = ?,
+			image = ?,
+			category_id = ?,
+			company_id = ?
+		WHERE
+			id = ?
+	`
 	_, err := pr.db.Exec(
 		sql,
 		product.Name,
@@ -125,7 +172,11 @@ func (pr *ProductRepositoryMysql) Update(product *entity.Product) error {
 }
 
 func (pr *ProductRepositoryMysql) Delete(id string) error {
-	sql := `UPDATE products SET deleted_at = NOW() WHERE id = $1`
+	sql := `
+		UPDATE products
+		SET deleted_at = NOW()
+		WHERE id = ?
+	`
 	_, err := pr.db.Exec(sql, id)
 
 	if err != nil {
@@ -136,7 +187,19 @@ func (pr *ProductRepositoryMysql) Delete(id string) error {
 }
 
 func (pr *ProductRepositoryMysql) FindByCategoryId(categoryId string) ([]*entity.Product, error) {
-	sql := `SELECT * FROM products WHERE category_id = $1 AND deleted_at IS NULL`
+	sql := `
+		SELECT
+			id,
+			name,
+			description,
+			price,
+			image,
+			category_id,
+			company_id 
+		FROM products 
+		WHERE category_id = ? 
+			AND deleted_at IS NULL
+	`
 	rows, err := pr.db.Query(sql, categoryId)
 	if err != nil {
 		return nil, err
