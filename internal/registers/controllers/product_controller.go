@@ -50,7 +50,7 @@ func (pc *ProductController) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err = usecase.NewCreateProductUseCase(pc.Repository).Execute(product)
+	productSaved, err := usecase.NewCreateProductUseCase(pc.Repository).Execute(product)
 
 	if err != nil {
 		render.Render(w, r, ErrInternalServerError)
@@ -58,12 +58,12 @@ func (pc *ProductController) Create(w http.ResponseWriter, r *http.Request) {
 	}
 
 	output := &dto.ProductResponseDto{
-		ID:          product.ID,
-		Name:        product.Name,
-		Description: product.Description,
-		Price:       product.Price,
-		Image:       product.Image,
-		CategoryId:  product.CategoryId,
+		ID:          productSaved.ID,
+		Name:        productSaved.Name,
+		Description: productSaved.Description,
+		Price:       productSaved.Price,
+		Image:       productSaved.Image,
+		CategoryId:  productSaved.CategoryId,
 	}
 	render.Render(w, r, httpResponsePkg.NewProductResponse(output))
 }
