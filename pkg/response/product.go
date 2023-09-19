@@ -17,3 +17,15 @@ func (pr *ProductResponse) Render(w http.ResponseWriter, r *http.Request) error 
 func NewProductResponse(product *dto.ProductResponseDto) *ProductResponse {
 	return &ProductResponse{product}
 }
+
+type ProductsResponse struct {
+	Products []*dto.ProductResponseDto
+}
+
+func (pr *ProductsResponse) Render(w http.ResponseWriter, r *http.Request) error {
+	return nil
+}
+
+func NewProductsResponse(products []*dto.ProductResponseDto) *ProductsResponse {
+	return &ProductsResponse{products}
+}

@@ -18,3 +18,14 @@ type ProductResponseDto struct {
 	Image       string  `json:"image"`
 	CategoryId  string  `json:"category_id"`
 }
+
+type CategoryDto struct {
+	ID        string `json:"id"`
+	Name      string `json:"name"`
+	CompanyId string `json:"company_id"`
+}
+
+type CategoryResponseDto struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
+}
