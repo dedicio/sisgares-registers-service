@@ -10,13 +10,30 @@ type ProductRepository interface {
 	Create(product *Product) error
 	Update(product *Product) error
 	Delete(id string) error
-	FindByCategoryId(categoryId string) ([]*Product, error)
+}
+
+type CategoryRepository interface {
+	FindById(id string) (*Category, error)
+	FindAll() ([]*Category, error)
+	Create(category *Category) error
+	Update(category *Category) error
+	Delete(id string) error
+	FindProductsByCategoryId(categoryId string) ([]*Product, error)
 }
 
 type Category struct {
 	ID        string `json:"id"`
 	Name      string `json:"name"`
 	CompanyId string `json:"company_id"`
+}
+
+func NewCategory(name string, companyId string) *Category {
+	id := utils.NewUUID()
+	return &Category{
+		ID:        id,
+		Name:      name,
+		CompanyId: companyId,
+	}
 }
 
 type Product struct {

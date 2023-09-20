@@ -12,12 +12,6 @@ import (
 	"github.com/go-chi/render"
 )
 
-var ErrNotFound = &httpResponsePkg.ErrResponse{HTTPStatusCode: 404, StatusText: "Produto não encontrado."}
-
-var ErrInvalidRequest = &httpResponsePkg.ErrResponse{HTTPStatusCode: 400, StatusText: "Requisição inválida."}
-
-var ErrInternalServerError = &httpResponsePkg.ErrResponse{HTTPStatusCode: 500, StatusText: "Não foi possível processar a requisição."}
-
 type ProductController struct {
 	Repository entity.ProductRepository
 }
@@ -28,12 +22,23 @@ func NewProductController(productRepository entity.ProductRepository) *ProductCo
 	}
 }
 
+func (pc *ProductController) FindAll(w http.ResponseWriter, r *http.Request) {
+	products, err := usecase.NewListProductsUseCase(pc.Repository).Execute()
+
+	if err != nil {
+		render.Render(w, r, httpResponsePkg.ErrInternalServerError(err))
+		return
+	}
+
+	render.Render(w, r, httpResponsePkg.NewProductsResponse(products))
+}
+
 func (pc *ProductController) FindById(w http.ResponseWriter, r *http.Request) {
 	productId := chi.URLParam(r, "id")
 	product, err := usecase.NewFindProductByIdUseCase(pc.Repository).Execute(productId)
 
 	if err != nil {
-		render.Render(w, r, ErrNotFound)
+		render.Render(w, r, httpResponsePkg.ErrNotFound(err, "Produto"))
 		return
 	}
 
@@ -46,14 +51,14 @@ func (pc *ProductController) Create(w http.ResponseWriter, r *http.Request) {
 	err := payload.Decode(&product)
 
 	if err != nil {
-		render.Render(w, r, ErrInvalidRequest)
+		render.Render(w, r, httpResponsePkg.ErrInvalidRequest(err))
 		return
 	}
 
 	productSaved, err := usecase.NewCreateProductUseCase(pc.Repository).Execute(product)
 
 	if err != nil {
-		render.Render(w, r, ErrInternalServerError)
+		render.Render(w, r, httpResponsePkg.ErrInternalServerError(err))
 		return
 	}
 
@@ -73,7 +78,7 @@ func (pc *ProductController) Delete(w http.ResponseWriter, r *http.Request) {
 	err := usecase.NewDeleteProductUseCase(pc.Repository).Execute(productId)
 
 	if err != nil {
-		render.Render(w, r, ErrNotFound)
+		render.Render(w, r, httpResponsePkg.ErrInternalServerError(err))
 		return
 	}
 
@@ -86,14 +91,14 @@ func (pc *ProductController) Update(w http.ResponseWriter, r *http.Request) {
 	err := payload.Decode(&product)
 
 	if err != nil {
-		render.Render(w, r, ErrInvalidRequest)
+		render.Render(w, r, httpResponsePkg.ErrInvalidRequest(err))
 		return
 	}
 
 	err = usecase.NewUpdateProductUseCase(pc.Repository).Execute(product)
 
 	if err != nil {
-		render.Render(w, r, ErrInternalServerError)
+		render.Render(w, r, httpResponsePkg.ErrInternalServerError(err))
 		return
 	}
 

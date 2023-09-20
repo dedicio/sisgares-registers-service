@@ -24,7 +24,7 @@ func ErrInvalidRequest(err error) render.Renderer {
 	return &ErrResponse{
 		Err:            err,
 		HTTPStatusCode: 400,
-		StatusText:     "Invalid request.",
+		StatusText:     "Requisição inválida.",
 		ErrorText:      err.Error(),
 	}
 }
@@ -33,7 +33,25 @@ func ErrRender(err error) render.Renderer {
 	return &ErrResponse{
 		Err:            err,
 		HTTPStatusCode: 422,
-		StatusText:     "Error rendering response.",
+		StatusText:     "Erro ao carregar a resposta.",
+		ErrorText:      err.Error(),
+	}
+}
+
+func ErrInternalServerError(err error) render.Renderer {
+	return &ErrResponse{
+		Err:            err,
+		HTTPStatusCode: 500,
+		StatusText:     "Não foi possível processar a requisição.",
+		ErrorText:      err.Error(),
+	}
+}
+
+func ErrNotFound(err error, entity string) render.Renderer {
+	return &ErrResponse{
+		Err:            err,
+		HTTPStatusCode: 404,
+		StatusText:     entity + `Categoria não encontrada.`,
 		ErrorText:      err.Error(),
 	}
 }

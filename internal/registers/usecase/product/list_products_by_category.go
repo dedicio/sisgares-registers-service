@@ -6,17 +6,17 @@ import (
 )
 
 type ListProductsByCategoryUseCase struct {
-	ProductRepository entity.ProductRepository
+	CategoryRepository entity.CategoryRepository
 }
 
-func NewListProductsByCategoryUseCase(productRepository entity.ProductRepository) *ListProductsByCategoryUseCase {
+func NewListProductsByCategoryUseCase(productRepository entity.CategoryRepository) *ListProductsByCategoryUseCase {
 	return &ListProductsByCategoryUseCase{
-		ProductRepository: productRepository,
+		CategoryRepository: productRepository,
 	}
 }
 
 func (uc ListProductsByCategoryUseCase) Execute(categoryId string) ([]*dto.ProductResponseDto, error) {
-	products, err := uc.ProductRepository.FindByCategoryId(categoryId)
+	products, err := uc.CategoryRepository.FindProductsByCategoryId(categoryId)
 	if err != nil {
 		return nil, err
 	}
