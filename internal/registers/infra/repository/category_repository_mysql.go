@@ -164,7 +164,7 @@ func (cr *CategoryRepositoryMysql) Delete(id string) error {
 	return nil
 }
 
-func (pr *ProductRepositoryMysql) FindProductsByCategoryId(categoryId string) ([]*entity.Product, error) {
+func (cr *CategoryRepositoryMysql) FindProductsByCategoryId(categoryId string) ([]*entity.Product, error) {
 	sql := `
 		SELECT
 			id,
@@ -178,7 +178,7 @@ func (pr *ProductRepositoryMysql) FindProductsByCategoryId(categoryId string) ([
 		WHERE category_id = ? 
 			AND deleted_at IS NULL
 	`
-	rows, err := pr.db.Query(sql, categoryId)
+	rows, err := cr.db.Query(sql, categoryId)
 	if err != nil {
 		return nil, err
 	}
