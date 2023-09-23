@@ -28,9 +28,15 @@ func (routes Routes) Routes() chi.Router {
 	router.Use(render.SetContentType(render.ContentTypeJSON))
 
 	productRepository := repository.NewProductRepositoryMysql(routes.DB)
+	categoryRepository := repository.NewCategoryRepositoryMysql(routes.DB)
+	positionRepository := repository.NewPositionRepositoryMysql(routes.DB)
+	groupRepository := repository.NewGroupRepositoryMysql(routes.DB)
 
 	router.Route("/v1", func(router chi.Router) {
 		router.Mount("/products", NewProductRoutes(productRepository).Routes())
+		router.Mount("/categories", NewCategoryRoutes(categoryRepository).Routes())
+		router.Mount("/positions", NewPositionRoutes(positionRepository).Routes())
+		router.Mount("/groups", NewGroupRoutes(groupRepository).Routes())
 	})
 
 	return router

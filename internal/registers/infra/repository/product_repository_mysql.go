@@ -2,7 +2,6 @@ package repository
 
 import (
 	"database/sql"
-	"fmt"
 
 	"github.com/dedicio/sisgares-registers-service/internal/registers/entity"
 )
@@ -131,8 +130,6 @@ func (pr *ProductRepositoryMysql) Create(product *entity.Product) error {
 		product.CompanyId,
 	)
 
-	fmt.Println("erro no sql", err)
-
 	if err != nil {
 		return err
 	}
@@ -184,49 +181,4 @@ func (pr *ProductRepositoryMysql) Delete(id string) error {
 	}
 
 	return nil
-}
-
-func (pr *ProductRepositoryMysql) FindByCategoryId(categoryId string) ([]*entity.Product, error) {
-	sql := `
-		SELECT
-			id,
-			name,
-			description,
-			price,
-			image,
-			category_id,
-			company_id 
-		FROM products 
-		WHERE category_id = ? 
-			AND deleted_at IS NULL
-	`
-	rows, err := pr.db.Query(sql, categoryId)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	var products []*entity.Product
-	for rows.Next() {
-		var product entity.Product
-		err := rows.Scan(
-			&product.ID,
-			&product.Name,
-			&product.Description,
-			&product.Price,
-			&product.Image,
-			&product.CategoryId,
-			&product.CompanyId,
-		)
-		if err != nil {
-			return nil, err
-		}
-		products = append(products, &product)
-	}
-
-	if err = rows.Err(); err != nil {
-		return nil, err
-	}
-
-	return products, nil
 }
