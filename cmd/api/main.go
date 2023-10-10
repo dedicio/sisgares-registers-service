@@ -10,7 +10,7 @@ import (
 	"github.com/dedicio/sisgares-registers-service/internal/registers/routes"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	_ "github.com/go-sql-driver/mysql"
+	_ "github.com/lib/pq"
 )
 
 var (
@@ -48,5 +48,5 @@ func main() {
 	router.Use(middleware.Logger)
 	router.Mount("/", routes.Routes())
 
-	http.ListenAndServe(":3000", router)
+	http.ListenAndServe(":3002", router)
 }

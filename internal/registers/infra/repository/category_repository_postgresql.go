@@ -86,7 +86,7 @@ func (cr *CategoryRepositoryPostgresql) Create(category *entity.Category) error 
 			id,
 			name,
 			company_id,
-			create_at
+			created_at
 		) VALUES (
 			$1, 
 			$2,

@@ -7,33 +7,14 @@ networks:
     external: true
 
 services:
-  app:
+  registers-api:
     build: .
+    container_name: registers-api
     networks:
       - kong-net
     ports:
-      - 3000:3000
+      - 3002:3002
     volumes:
       - .:/go/src/app
-
-  mysql: 
-    image: mysql:8
-    container_name: mysql
-    restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: registers
-    networks:
-      - kong-net
-    ports:
-      - 3306:3306
-    volumes:
-      - ./mysql:/var/lib/mysql
-
-  adminer:
-    image: adminer
-    restart: always
-    networks:
-      - kong-net
-    ports:
-      - 8080:8080
+    env_file:
+      - .env

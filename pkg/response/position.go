@@ -19,7 +19,7 @@ func NewPositionResponse(product *dto.PositionResponseDto) *PositionResponse {
 }
 
 type PositionsResponse struct {
-	Positions []*dto.PositionResponseDto
+	Positions []*dto.PositionResponseDto `json:"items"`
 }
 
 func (pr *PositionsResponse) Render(w http.ResponseWriter, r *http.Request) error {

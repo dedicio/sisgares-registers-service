@@ -19,7 +19,7 @@ func NewGroupResponse(category *dto.GroupResponseDto) *GroupResponse {
 }
 
 type GroupsResponse struct {
-	Groups []*dto.GroupResponseDto
+	Groups []*dto.GroupResponseDto `json:"items"`
 }
 
 func (cr *GroupsResponse) Render(w http.ResponseWriter, r *http.Request) error {
