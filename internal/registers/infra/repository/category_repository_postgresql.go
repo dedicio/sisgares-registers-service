@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+	"fmt"
 
 	"github.com/dedicio/sisgares-registers-service/internal/registers/entity"
 )
@@ -16,7 +17,7 @@ func NewCategoryRepositoryPostgresql(db *sql.DB) *CategoryRepositoryPostgresql {
 	}
 }
 
-func (cr *CategoryRepositoryPostgresql) FindById(id string) (*entity.Category, error) {
+func (cr *CategoryRepositoryPostgresql) FindById(companyID string, id string) (*entity.Category, error) {
 	var category entity.Category
 
 	sqlStatement := `
@@ -26,9 +27,14 @@ func (cr *CategoryRepositoryPostgresql) FindById(id string) (*entity.Category, e
 			company_id
 		FROM categories
 		WHERE id = $1
+			AND company_id = $2
 			AND deleted_at IS NULL
 	`
-	err := cr.db.QueryRow(sqlStatement, id).Scan(
+	err := cr.db.QueryRow(
+		sqlStatement,
+		id,
+		companyID,
+	).Scan(
 		&category.ID,
 		&category.Name,
 		&category.CompanyId,
@@ -41,17 +47,20 @@ func (cr *CategoryRepositoryPostgresql) FindById(id string) (*entity.Category, e
 	return &category, nil
 }
 
-func (cr *CategoryRepositoryPostgresql) FindAll() ([]*entity.Category, error) {
+func (cr *CategoryRepositoryPostgresql) FindAll(companyID string) ([]*entity.Category, error) {
+	fmt.Println("companyID", companyID)
 	sql := `
 		SELECT
 			id,
 			name,
 			company_id
 		FROM categories
-		WHERE deleted_at IS NULL
+		WHERE
+			company_id = $1
+			AND deleted_at IS NULL
 	`
 
-	rows, err := cr.db.Query(sql)
+	rows, err := cr.db.Query(sql, companyID)
 	if err != nil {
 		return nil, err
 	}

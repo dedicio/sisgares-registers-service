@@ -23,7 +23,8 @@ func NewCategoryController(categoryRepository entity.CategoryRepository) *Catego
 }
 
 func (cc *CategoryController) FindAll(w http.ResponseWriter, r *http.Request) {
-	categories, err := usecase.NewListCategoriesUseCase(cc.Repository).Execute()
+	companyId := r.Header.Get("X-Company-ID")
+	categories, err := usecase.NewListCategoriesUseCase(cc.Repository, companyId).Execute()
 
 	if err != nil {
 		render.Render(w, r, httpResponsePkg.ErrInternalServerError(err))
@@ -34,8 +35,9 @@ func (cc *CategoryController) FindAll(w http.ResponseWriter, r *http.Request) {
 }
 
 func (cc *CategoryController) FindById(w http.ResponseWriter, r *http.Request) {
+	companyId := r.Header.Get("X-Company-ID")
 	categoryId := chi.URLParam(r, "id")
-	category, err := usecase.NewFindCategoryByIdUseCase(cc.Repository).Execute(categoryId)
+	category, err := usecase.NewFindCategoryByIdUseCase(cc.Repository, companyId).Execute(categoryId)
 
 	if err != nil {
 		render.Render(w, r, httpResponsePkg.ErrNotFound(err, "Categoria"))
@@ -70,6 +72,7 @@ func (cc *CategoryController) Create(w http.ResponseWriter, r *http.Request) {
 }
 
 func (cc *CategoryController) Update(w http.ResponseWriter, r *http.Request) {
+	companyId := r.Header.Get("X-Company-ID")
 	payload := json.NewDecoder(r.Body)
 	category := dto.CategoryDto{}
 	err := payload.Decode(&category)
@@ -79,7 +82,7 @@ func (cc *CategoryController) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = usecase.NewUpdateCategoryUseCase(cc.Repository).Execute(category)
+	err = usecase.NewUpdateCategoryUseCase(cc.Repository, companyId).Execute(category)
 
 	if err != nil {
 		render.Render(w, r, httpResponsePkg.ErrInternalServerError(err))

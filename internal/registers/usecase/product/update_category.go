@@ -7,16 +7,21 @@ import (
 
 type UpdateCategoryUseCase struct {
 	Repository entity.CategoryRepository
+	CompanyID  string
 }
 
-func NewUpdateCategoryUseCase(categoryRepository entity.CategoryRepository) *UpdateCategoryUseCase {
+func NewUpdateCategoryUseCase(
+	categoryRepository entity.CategoryRepository,
+	companyID string,
+) *UpdateCategoryUseCase {
 	return &UpdateCategoryUseCase{
 		Repository: categoryRepository,
+		CompanyID:  companyID,
 	}
 }
 
 func (uc *UpdateCategoryUseCase) Execute(input dto.CategoryDto) error {
-	category, err := uc.Repository.FindById(input.ID)
+	category, err := uc.Repository.FindById(uc.CompanyID, input.ID)
 	if err != nil {
 		return err
 	}

@@ -13,8 +13,8 @@ type ProductRepository interface {
 }
 
 type CategoryRepository interface {
-	FindById(id string) (*Category, error)
-	FindAll() ([]*Category, error)
+	FindById(companyID string, id string) (*Category, error)
+	FindAll(companyID string) ([]*Category, error)
 	Create(category *Category) error
 	Update(category *Category) error
 	Delete(id string) error

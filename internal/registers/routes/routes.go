@@ -1,7 +1,9 @@
 package routes
 
 import (
+	"context"
 	"database/sql"
+	"net/http"
 
 	"github.com/dedicio/sisgares-registers-service/internal/registers/infra/repository"
 	"github.com/go-chi/chi/v5"
@@ -33,6 +35,7 @@ func (routes Routes) Routes() chi.Router {
 	groupRepository := repository.NewGroupRepositoryPostgresql(routes.DB)
 
 	router.Route("/v1", func(router chi.Router) {
+		router.Use(CompanyCtx)
 		router.Mount("/products", NewProductRoutes(productRepository).Routes())
 		router.Mount("/categories", NewCategoryRoutes(categoryRepository).Routes())
 		router.Mount("/positions", NewPositionRoutes(positionRepository).Routes())
@@ -40,4 +43,14 @@ func (routes Routes) Routes() chi.Router {
 	})
 
 	return router
+}
+
+type contextKey string
+
+func CompanyCtx(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		companyID := r.Header.Get("X-Company-ID")
+		ctx := context.WithValue(r.Context(), contextKey("CompanyID"), companyID)
+		next.ServeHTTP(w, r.WithContext(ctx))
+	})
 }
