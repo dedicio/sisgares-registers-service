@@ -6,17 +6,17 @@ import (
 	"github.com/dedicio/sisgares-registers-service/internal/registers/entity"
 )
 
-type CategoryRepositoryMysql struct {
+type CategoryRepositoryPostgresql struct {
 	db *sql.DB
 }
 
-func NewCategoryRepositoryMysql(db *sql.DB) *CategoryRepositoryMysql {
-	return &CategoryRepositoryMysql{
+func NewCategoryRepositoryPostgresql(db *sql.DB) *CategoryRepositoryPostgresql {
+	return &CategoryRepositoryPostgresql{
 		db: db,
 	}
 }
 
-func (cr *CategoryRepositoryMysql) FindById(id string) (*entity.Category, error) {
+func (cr *CategoryRepositoryPostgresql) FindById(id string) (*entity.Category, error) {
 	var category entity.Category
 
 	sqlStatement := `
@@ -25,7 +25,7 @@ func (cr *CategoryRepositoryMysql) FindById(id string) (*entity.Category, error)
 			name,
 			company_id
 		FROM categories
-		WHERE id = ?
+		WHERE id = $1
 			AND deleted_at IS NULL
 	`
 	err := cr.db.QueryRow(sqlStatement, id).Scan(
@@ -41,7 +41,7 @@ func (cr *CategoryRepositoryMysql) FindById(id string) (*entity.Category, error)
 	return &category, nil
 }
 
-func (cr *CategoryRepositoryMysql) FindAll() ([]*entity.Category, error) {
+func (cr *CategoryRepositoryPostgresql) FindAll() ([]*entity.Category, error) {
 	sql := `
 		SELECT
 			id,
@@ -80,13 +80,19 @@ func (cr *CategoryRepositoryMysql) FindAll() ([]*entity.Category, error) {
 	return categories, nil
 }
 
-func (cr *CategoryRepositoryMysql) Create(category *entity.Category) error {
+func (cr *CategoryRepositoryPostgresql) Create(category *entity.Category) error {
 	sql := `
 		INSERT INTO categories (
 			id,
 			name,
-			company_id
-		) VALUES (?, ?, ?)
+			company_id,
+			create_at
+		) VALUES (
+			$1, 
+			$2,
+			$3,
+			NOW()
+		)
 	`
 
 	stmt, err := cr.db.Prepare(sql)
@@ -108,16 +114,15 @@ func (cr *CategoryRepositoryMysql) Create(category *entity.Category) error {
 	return nil
 }
 
-func (cr *CategoryRepositoryMysql) Update(category *entity.Category) error {
+func (cr *CategoryRepositoryPostgresql) Update(category *entity.Category) error {
 	sql := `
 		UPDATE
 			categories
 		SET
-			name = ?,
-			company_id = ?,
-			updated_at = NOW()
+			name = $1,
+			company_id = $2
 		WHERE
-			id = ?
+			id = $3
 	`
 
 	stmt, err := cr.db.Prepare(sql)
@@ -139,14 +144,14 @@ func (cr *CategoryRepositoryMysql) Update(category *entity.Category) error {
 	return nil
 }
 
-func (cr *CategoryRepositoryMysql) Delete(id string) error {
+func (cr *CategoryRepositoryPostgresql) Delete(id string) error {
 	sql := `
 		UPDATE
 			categories
 		SET
 			deleted_at = NOW()
 		WHERE
-			id = ?
+			id = $1
 	`
 
 	stmt, err := cr.db.Prepare(sql)
@@ -164,7 +169,7 @@ func (cr *CategoryRepositoryMysql) Delete(id string) error {
 	return nil
 }
 
-func (cr *CategoryRepositoryMysql) FindProductsByCategoryId(categoryId string) ([]*entity.Product, error) {
+func (cr *CategoryRepositoryPostgresql) FindProductsByCategoryId(categoryId string) ([]*entity.Product, error) {
 	sql := `
 		SELECT
 			id,
@@ -175,7 +180,7 @@ func (cr *CategoryRepositoryMysql) FindProductsByCategoryId(categoryId string) (
 			category_id,
 			company_id 
 		FROM products 
-		WHERE category_id = ? 
+		WHERE category_id = $1 
 			AND deleted_at IS NULL
 	`
 	rows, err := cr.db.Query(sql, categoryId)

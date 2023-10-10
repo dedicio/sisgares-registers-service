@@ -6,17 +6,17 @@ import (
 	"github.com/dedicio/sisgares-registers-service/internal/registers/entity"
 )
 
-type ProductRepositoryMysql struct {
+type ProductRepositoryPostgresql struct {
 	db *sql.DB
 }
 
-func NewProductRepositoryMysql(db *sql.DB) *ProductRepositoryMysql {
-	return &ProductRepositoryMysql{
+func NewProductRepositoryPostgresql(db *sql.DB) *ProductRepositoryPostgresql {
+	return &ProductRepositoryPostgresql{
 		db: db,
 	}
 }
 
-func (pr *ProductRepositoryMysql) FindById(id string) (*entity.Product, error) {
+func (pr *ProductRepositoryPostgresql) FindById(id string) (*entity.Product, error) {
 	var product entity.Product
 
 	sqlStatement := `
@@ -29,7 +29,7 @@ func (pr *ProductRepositoryMysql) FindById(id string) (*entity.Product, error) {
 			category_id,
 			company_id
 		FROM products
-		WHERE id = ?
+		WHERE id = $1
 			AND deleted_at IS NULL
 	`
 	err := pr.db.QueryRow(sqlStatement, id).Scan(
@@ -49,7 +49,7 @@ func (pr *ProductRepositoryMysql) FindById(id string) (*entity.Product, error) {
 	return &product, nil
 }
 
-func (pr *ProductRepositoryMysql) FindAll() ([]*entity.Product, error) {
+func (pr *ProductRepositoryPostgresql) FindAll() ([]*entity.Product, error) {
 	sql := `
 		SELECT
 			id,
@@ -93,7 +93,7 @@ func (pr *ProductRepositoryMysql) FindAll() ([]*entity.Product, error) {
 	return products, nil
 }
 
-func (pr *ProductRepositoryMysql) Create(product *entity.Product) error {
+func (pr *ProductRepositoryPostgresql) Create(product *entity.Product) error {
 	sql := `
 		INSERT INTO
 			products (
@@ -108,13 +108,13 @@ func (pr *ProductRepositoryMysql) Create(product *entity.Product) error {
 				updated_at
 			)
 		VALUES (
-			?,
-			?,
-			?,
-			?,
-			?,
-			?,
-			?,
+			$1,
+			$2,
+			$3,
+			$4,
+			$5,
+			$6,
+			$7,
 			NOW(),
 			NOW()
 		)
@@ -137,18 +137,18 @@ func (pr *ProductRepositoryMysql) Create(product *entity.Product) error {
 	return nil
 }
 
-func (pr *ProductRepositoryMysql) Update(product *entity.Product) error {
+func (pr *ProductRepositoryPostgresql) Update(product *entity.Product) error {
 	sql := `
 		UPDATE products
 		SET
-			name = ?,
-			description = ?,
-			price = ?,
-			image = ?,
-			category_id = ?,
-			company_id = ?
+			name = $1,
+			description = $2,
+			price = $3,
+			image = $4,
+			category_id = $5,
+			company_id = $6,
 		WHERE
-			id = ?
+			id = $7
 	`
 	_, err := pr.db.Exec(
 		sql,
@@ -168,11 +168,11 @@ func (pr *ProductRepositoryMysql) Update(product *entity.Product) error {
 	return nil
 }
 
-func (pr *ProductRepositoryMysql) Delete(id string) error {
+func (pr *ProductRepositoryPostgresql) Delete(id string) error {
 	sql := `
 		UPDATE products
 		SET deleted_at = NOW()
-		WHERE id = ?
+		WHERE id = $1
 	`
 	_, err := pr.db.Exec(sql, id)
 
