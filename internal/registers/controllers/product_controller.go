@@ -23,7 +23,8 @@ func NewProductController(productRepository entity.ProductRepository) *ProductCo
 }
 
 func (pc *ProductController) FindAll(w http.ResponseWriter, r *http.Request) {
-	products, err := usecase.NewListProductsUseCase(pc.Repository).Execute()
+	companyID := r.Header.Get("X-Company-ID")
+	products, err := usecase.NewListProductsUseCase(pc.Repository, companyID).Execute()
 
 	if err != nil {
 		render.Render(w, r, httpResponsePkg.ErrInternalServerError(err))
@@ -46,15 +47,16 @@ func (pc *ProductController) FindById(w http.ResponseWriter, r *http.Request) {
 }
 
 func (pc *ProductController) Create(w http.ResponseWriter, r *http.Request) {
+	companyID := r.Header.Get("X-Company-ID")
 	payload := json.NewDecoder(r.Body)
 	product := dto.ProductDto{}
 	err := payload.Decode(&product)
-
 	if err != nil {
 		render.Render(w, r, httpResponsePkg.ErrInvalidRequest(err))
 		return
 	}
 
+	product.CompanyId = companyID
 	productSaved, err := usecase.NewCreateProductUseCase(pc.Repository).Execute(product)
 
 	if err != nil {

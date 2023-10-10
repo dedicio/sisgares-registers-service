@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/dedicio/sisgares-registers-service/internal/registers/dto"
@@ -35,9 +36,8 @@ func (cc *CategoryController) FindAll(w http.ResponseWriter, r *http.Request) {
 }
 
 func (cc *CategoryController) FindById(w http.ResponseWriter, r *http.Request) {
-	companyId := r.Header.Get("X-Company-ID")
 	categoryId := chi.URLParam(r, "id")
-	category, err := usecase.NewFindCategoryByIdUseCase(cc.Repository, companyId).Execute(categoryId)
+	category, err := usecase.NewFindCategoryByIdUseCase(cc.Repository).Execute(categoryId)
 
 	if err != nil {
 		render.Render(w, r, httpResponsePkg.ErrNotFound(err, "Categoria"))
@@ -48,15 +48,18 @@ func (cc *CategoryController) FindById(w http.ResponseWriter, r *http.Request) {
 }
 
 func (cc *CategoryController) Create(w http.ResponseWriter, r *http.Request) {
+	companyId := r.Header.Get("X-Company-ID")
+	fmt.Println("Company ID: ", companyId)
 	payload := json.NewDecoder(r.Body)
 	category := dto.CategoryDto{}
-	err := payload.Decode(&category)
 
+	err := payload.Decode(&category)
 	if err != nil {
 		render.Render(w, r, httpResponsePkg.ErrInvalidRequest(err))
 		return
 	}
 
+	category.CompanyId = companyId
 	categorySaved, err := usecase.NewCreateCategoryUseCase(cc.Repository).Execute(category)
 
 	if err != nil {

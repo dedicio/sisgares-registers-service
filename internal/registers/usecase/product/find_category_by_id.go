@@ -10,18 +10,14 @@ type FindCategoryByIdUseCase struct {
 	CompanyID  string
 }
 
-func NewFindCategoryByIdUseCase(
-	categoryRepository entity.CategoryRepository,
-	companyID string,
-) *FindCategoryByIdUseCase {
+func NewFindCategoryByIdUseCase(categoryRepository entity.CategoryRepository) *FindCategoryByIdUseCase {
 	return &FindCategoryByIdUseCase{
 		Repository: categoryRepository,
-		CompanyID:  companyID,
 	}
 }
 
 func (uc *FindCategoryByIdUseCase) Execute(id string) (*dto.CategoryResponseDto, error) {
-	category, err := uc.Repository.FindById(uc.CompanyID, id)
+	category, err := uc.Repository.FindById(id)
 	if err != nil {
 		return nil, err
 	}

@@ -7,16 +7,21 @@ import (
 
 type ListProductsUseCase struct {
 	ProductRepository entity.ProductRepository
+	CompanyID         string
 }
 
-func NewListProductsUseCase(productRepository entity.ProductRepository) *ListProductsUseCase {
+func NewListProductsUseCase(
+	productRepository entity.ProductRepository,
+	companyID string,
+) *ListProductsUseCase {
 	return &ListProductsUseCase{
 		ProductRepository: productRepository,
+		CompanyID:         companyID,
 	}
 }
 
 func (uc ListProductsUseCase) Execute() ([]*dto.ProductResponseDto, error) {
-	products, err := uc.ProductRepository.FindAll()
+	products, err := uc.ProductRepository.FindAll(uc.CompanyID)
 	if err != nil {
 		return nil, err
 	}

@@ -17,7 +17,7 @@ func NewCategoryRepositoryPostgresql(db *sql.DB) *CategoryRepositoryPostgresql {
 	}
 }
 
-func (cr *CategoryRepositoryPostgresql) FindById(companyID string, id string) (*entity.Category, error) {
+func (cr *CategoryRepositoryPostgresql) FindById(id string) (*entity.Category, error) {
 	var category entity.Category
 
 	sqlStatement := `
@@ -27,13 +27,11 @@ func (cr *CategoryRepositoryPostgresql) FindById(companyID string, id string) (*
 			company_id
 		FROM categories
 		WHERE id = $1
-			AND company_id = $2
 			AND deleted_at IS NULL
 	`
 	err := cr.db.QueryRow(
 		sqlStatement,
 		id,
-		companyID,
 	).Scan(
 		&category.ID,
 		&category.Name,

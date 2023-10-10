@@ -45,7 +45,7 @@ func (pr *PositionRepositoryPostgresql) FindById(id string) (*entity.Position, e
 	return &position, nil
 }
 
-func (pr *PositionRepositoryPostgresql) FindAll() ([]*entity.Position, error) {
+func (pr *PositionRepositoryPostgresql) FindAll(companyID string) ([]*entity.Position, error) {
 	sql := `
 		SELECT
 			id,
@@ -54,10 +54,11 @@ func (pr *PositionRepositoryPostgresql) FindAll() ([]*entity.Position, error) {
 			group_id,
 			company_id
 		FROM positions
-		WHERE deleted_at IS NULL
+		WHERE company_id = $1
+			AND deleted_at IS NULL
 	`
 
-	rows, err := pr.db.Query(sql)
+	rows, err := pr.db.Query(sql, companyID)
 
 	if err != nil {
 		return nil, err

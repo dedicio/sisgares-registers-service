@@ -41,17 +41,18 @@ func (gr *GroupRepositoryPostgresql) FindById(id string) (*entity.Group, error) 
 	return &group, nil
 }
 
-func (gr *GroupRepositoryPostgresql) FindAll() ([]*entity.Group, error) {
+func (gr *GroupRepositoryPostgresql) FindAll(companyID string) ([]*entity.Group, error) {
 	sql := `
 		SELECT
 			id,
 			name,
 			company_id
 		FROM groups
-		WHERE deleted_at IS NULL
+		WHERE company_id = $1
+			AND deleted_at IS NULL
 	`
 
-	rows, err := gr.db.Query(sql)
+	rows, err := gr.db.Query(sql, companyID)
 	if err != nil {
 		return nil, err
 	}

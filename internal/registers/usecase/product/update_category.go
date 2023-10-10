@@ -21,7 +21,7 @@ func NewUpdateCategoryUseCase(
 }
 
 func (uc *UpdateCategoryUseCase) Execute(input dto.CategoryDto) error {
-	category, err := uc.Repository.FindById(uc.CompanyID, input.ID)
+	category, err := uc.Repository.FindById(input.ID)
 	if err != nil {
 		return err
 	}

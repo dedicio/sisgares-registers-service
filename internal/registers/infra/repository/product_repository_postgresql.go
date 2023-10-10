@@ -49,7 +49,7 @@ func (pr *ProductRepositoryPostgresql) FindById(id string) (*entity.Product, err
 	return &product, nil
 }
 
-func (pr *ProductRepositoryPostgresql) FindAll() ([]*entity.Product, error) {
+func (pr *ProductRepositoryPostgresql) FindAll(companyID string) ([]*entity.Product, error) {
 	sql := `
 		SELECT
 			id,
@@ -60,9 +60,11 @@ func (pr *ProductRepositoryPostgresql) FindAll() ([]*entity.Product, error) {
 			category_id,
 			company_id 
 		FROM products 
-		WHERE deleted_at IS NULL
+		WHERE
+			company_id = $1
+			AND deleted_at IS NULL
 	`
-	rows, err := pr.db.Query(sql)
+	rows, err := pr.db.Query(sql, companyID)
 	if err != nil {
 		return nil, err
 	}

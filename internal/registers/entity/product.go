@@ -6,14 +6,14 @@ import (
 
 type ProductRepository interface {
 	FindById(id string) (*Product, error)
-	FindAll() ([]*Product, error)
+	FindAll(companyID string) ([]*Product, error)
 	Create(product *Product) error
 	Update(product *Product) error
 	Delete(id string) error
 }
 
 type CategoryRepository interface {
-	FindById(companyID string, id string) (*Category, error)
+	FindById(id string) (*Category, error)
 	FindAll(companyID string) ([]*Category, error)
 	Create(category *Category) error
 	Update(category *Category) error
