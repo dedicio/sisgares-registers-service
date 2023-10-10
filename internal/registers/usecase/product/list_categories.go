@@ -7,16 +7,21 @@ import (
 
 type ListCategoriesUseCase struct {
 	Repository entity.CategoryRepository
+	CompanyID  string
 }
 
-func NewListCategoriesUseCase(categoryRepository entity.CategoryRepository) *ListCategoriesUseCase {
+func NewListCategoriesUseCase(
+	categoryRepository entity.CategoryRepository,
+	companyID string,
+) *ListCategoriesUseCase {
 	return &ListCategoriesUseCase{
 		Repository: categoryRepository,
+		CompanyID:  companyID,
 	}
 }
 
 func (uc ListCategoriesUseCase) Execute() ([]*dto.CategoryResponseDto, error) {
-	categories, err := uc.Repository.FindAll()
+	categories, err := uc.Repository.FindAll(uc.CompanyID)
 	if err != nil {
 		return nil, err
 	}

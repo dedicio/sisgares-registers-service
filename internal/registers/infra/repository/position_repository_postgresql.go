@@ -6,17 +6,17 @@ import (
 	"github.com/dedicio/sisgares-registers-service/internal/registers/entity"
 )
 
-type PositionRepositoryMysql struct {
+type PositionRepositoryPostgresql struct {
 	db *sql.DB
 }
 
-func NewPositionRepositoryMysql(db *sql.DB) *PositionRepositoryMysql {
-	return &PositionRepositoryMysql{
+func NewPositionRepositoryPostgresql(db *sql.DB) *PositionRepositoryPostgresql {
+	return &PositionRepositoryPostgresql{
 		db: db,
 	}
 }
 
-func (pr *PositionRepositoryMysql) FindById(id string) (*entity.Position, error) {
+func (pr *PositionRepositoryPostgresql) FindById(id string) (*entity.Position, error) {
 	var position entity.Position
 
 	sqlStatement := `
@@ -27,7 +27,7 @@ func (pr *PositionRepositoryMysql) FindById(id string) (*entity.Position, error)
 			group_id,
 			company_id
 		FROM positions
-		WHERE id = ?
+		WHERE id = $1
 			AND deleted_at IS NULL
 	`
 	err := pr.db.QueryRow(sqlStatement, id).Scan(
@@ -45,7 +45,7 @@ func (pr *PositionRepositoryMysql) FindById(id string) (*entity.Position, error)
 	return &position, nil
 }
 
-func (pr *PositionRepositoryMysql) FindAll() ([]*entity.Position, error) {
+func (pr *PositionRepositoryPostgresql) FindAll(companyID string) ([]*entity.Position, error) {
 	sql := `
 		SELECT
 			id,
@@ -54,10 +54,11 @@ func (pr *PositionRepositoryMysql) FindAll() ([]*entity.Position, error) {
 			group_id,
 			company_id
 		FROM positions
-		WHERE deleted_at IS NULL
+		WHERE company_id = $1
+			AND deleted_at IS NULL
 	`
 
-	rows, err := pr.db.Query(sql)
+	rows, err := pr.db.Query(sql, companyID)
 
 	if err != nil {
 		return nil, err
@@ -88,7 +89,7 @@ func (pr *PositionRepositoryMysql) FindAll() ([]*entity.Position, error) {
 	return positions, nil
 }
 
-func (pr *PositionRepositoryMysql) Create(position *entity.Position) error {
+func (pr *PositionRepositoryPostgresql) Create(position *entity.Position) error {
 	sql := `
 		INSERT INTO positions (
 			id,
@@ -99,11 +100,11 @@ func (pr *PositionRepositoryMysql) Create(position *entity.Position) error {
 			created_at,
 			updated_at
 		) VALUES (
-			?,
-			?,
-			?,
-			?,
-			?,
+			$1,
+			$2,
+			$3,
+			$4,
+			$5,
 			NOW(),
 			NOW()
 		)
@@ -125,16 +126,16 @@ func (pr *PositionRepositoryMysql) Create(position *entity.Position) error {
 	return nil
 }
 
-func (pr *PositionRepositoryMysql) Update(position *entity.Position) error {
+func (pr *PositionRepositoryPostgresql) Update(position *entity.Position) error {
 	sql := `
 		UPDATE positions
 		SET
-			name = ?,
-			description = ?,
-			group_id = ?,
-			company_id = ?,
+			name = $1,
+			description = $2,
+			group_id = $3,
+			company_id = $4,
 			updated_at = NOW()
-		WHERE id = ?
+		WHERE id = $5
 	`
 
 	_, err := pr.db.Exec(
@@ -153,11 +154,11 @@ func (pr *PositionRepositoryMysql) Update(position *entity.Position) error {
 	return nil
 }
 
-func (pr *PositionRepositoryMysql) Delete(id string) error {
+func (pr *PositionRepositoryPostgresql) Delete(id string) error {
 	sql := `
 		UPDATE positions
 		SET deleted_at = NOW()
-		WHERE id = ?
+		WHERE id = $1
 	`
 
 	_, err := pr.db.Exec(sql, id)

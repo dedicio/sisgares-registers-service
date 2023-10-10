@@ -23,7 +23,8 @@ func NewGroupController(groupRepository entity.GroupRepository) *GroupController
 }
 
 func (gc *GroupController) FindAll(w http.ResponseWriter, r *http.Request) {
-	groups, err := usecase.NewListGroupsUseCase(gc.Repository).Execute()
+	companyID := r.Header.Get("X-Company-ID")
+	groups, err := usecase.NewListGroupsUseCase(gc.Repository).Execute(companyID)
 
 	if err != nil {
 		render.Render(w, r, httpResponsePkg.ErrInternalServerError(err))
@@ -46,15 +47,16 @@ func (gc *GroupController) FindById(w http.ResponseWriter, r *http.Request) {
 }
 
 func (gc *GroupController) Create(w http.ResponseWriter, r *http.Request) {
+	companyID := r.Header.Get("X-Company-ID")
 	payload := json.NewDecoder(r.Body)
 	group := dto.GroupDto{}
 	err := payload.Decode(&group)
-
 	if err != nil {
 		render.Render(w, r, httpResponsePkg.ErrInvalidRequest(err))
 		return
 	}
 
+	group.CompanyId = companyID
 	groupSaved, err := usecase.NewCreateGroupUseCase(gc.Repository).Execute(group)
 
 	if err != nil {

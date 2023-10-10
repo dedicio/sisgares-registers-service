@@ -7,11 +7,16 @@ import (
 
 type UpdateCategoryUseCase struct {
 	Repository entity.CategoryRepository
+	CompanyID  string
 }
 
-func NewUpdateCategoryUseCase(categoryRepository entity.CategoryRepository) *UpdateCategoryUseCase {
+func NewUpdateCategoryUseCase(
+	categoryRepository entity.CategoryRepository,
+	companyID string,
+) *UpdateCategoryUseCase {
 	return &UpdateCategoryUseCase{
 		Repository: categoryRepository,
+		CompanyID:  companyID,
 	}
 }
 

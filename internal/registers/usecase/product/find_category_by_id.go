@@ -7,6 +7,7 @@ import (
 
 type FindCategoryByIdUseCase struct {
 	Repository entity.CategoryRepository
+	CompanyID  string
 }
 
 func NewFindCategoryByIdUseCase(categoryRepository entity.CategoryRepository) *FindCategoryByIdUseCase {

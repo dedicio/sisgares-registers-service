@@ -15,8 +15,8 @@ func NewListGroupsUseCase(groupRepository entity.GroupRepository) *ListGroupsUse
 	}
 }
 
-func (uc ListGroupsUseCase) Execute() ([]*dto.GroupResponseDto, error) {
-	groups, err := uc.Repository.FindAll()
+func (uc ListGroupsUseCase) Execute(companyID string) ([]*dto.GroupResponseDto, error) {
+	groups, err := uc.Repository.FindAll(companyID)
 	if err != nil {
 		return nil, err
 	}

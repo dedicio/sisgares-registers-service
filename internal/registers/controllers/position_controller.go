@@ -23,7 +23,8 @@ func NewPositionController(positionRepository entity.PositionRepository) *Positi
 }
 
 func (pc *PositionController) FindAll(w http.ResponseWriter, r *http.Request) {
-	positions, err := usecase.NewListPositionsUseCase(pc.Repository).Execute()
+	companyID := r.Header.Get("X-Company-ID")
+	positions, err := usecase.NewListPositionsUseCase(pc.Repository).Execute(companyID)
 
 	if err != nil {
 		render.Render(w, r, httpResponsePkg.ErrInternalServerError(err))
@@ -46,15 +47,16 @@ func (pc *PositionController) FindById(w http.ResponseWriter, r *http.Request) {
 }
 
 func (pc *PositionController) Create(w http.ResponseWriter, r *http.Request) {
+	companyID := r.Header.Get("X-Company-ID")
 	payload := json.NewDecoder(r.Body)
 	position := dto.PositionDto{}
 	err := payload.Decode(&position)
-
 	if err != nil {
 		render.Render(w, r, httpResponsePkg.ErrInvalidRequest(err))
 		return
 	}
 
+	position.CompanyId = companyID
 	positionSaved, err := usecase.NewCreatePositionUseCase(pc.Repository).Execute(position)
 
 	if err != nil {

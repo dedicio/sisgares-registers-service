@@ -19,7 +19,7 @@ func NewCategoryResponse(category *dto.CategoryResponseDto) *CategoryResponse {
 }
 
 type CategoriesResponse struct {
-	Categories []*dto.CategoryResponseDto
+	Categories []*dto.CategoryResponseDto `json:"items"`
 }
 
 func (cr *CategoriesResponse) Render(w http.ResponseWriter, r *http.Request) error {

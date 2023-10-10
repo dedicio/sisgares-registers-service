@@ -6,17 +6,17 @@ import (
 	"github.com/dedicio/sisgares-registers-service/internal/registers/entity"
 )
 
-type GroupRepositoryMysql struct {
+type GroupRepositoryPostgresql struct {
 	db *sql.DB
 }
 
-func NewGroupRepositoryMysql(db *sql.DB) *GroupRepositoryMysql {
-	return &GroupRepositoryMysql{
+func NewGroupRepositoryPostgresql(db *sql.DB) *GroupRepositoryPostgresql {
+	return &GroupRepositoryPostgresql{
 		db: db,
 	}
 }
 
-func (gr *GroupRepositoryMysql) FindById(id string) (*entity.Group, error) {
+func (gr *GroupRepositoryPostgresql) FindById(id string) (*entity.Group, error) {
 	var group entity.Group
 
 	sqlStatement := `
@@ -25,7 +25,7 @@ func (gr *GroupRepositoryMysql) FindById(id string) (*entity.Group, error) {
 			name,
 			company_id
 		FROM groups
-		WHERE id = ?
+		WHERE id = $1
 			AND deleted_at IS NULL
 	`
 	err := gr.db.QueryRow(sqlStatement, id).Scan(
@@ -41,17 +41,18 @@ func (gr *GroupRepositoryMysql) FindById(id string) (*entity.Group, error) {
 	return &group, nil
 }
 
-func (gr *GroupRepositoryMysql) FindAll() ([]*entity.Group, error) {
+func (gr *GroupRepositoryPostgresql) FindAll(companyID string) ([]*entity.Group, error) {
 	sql := `
 		SELECT
 			id,
 			name,
 			company_id
 		FROM groups
-		WHERE deleted_at IS NULL
+		WHERE company_id = $1
+			AND deleted_at IS NULL
 	`
 
-	rows, err := gr.db.Query(sql)
+	rows, err := gr.db.Query(sql, companyID)
 	if err != nil {
 		return nil, err
 	}
@@ -81,7 +82,7 @@ func (gr *GroupRepositoryMysql) FindAll() ([]*entity.Group, error) {
 	return groups, nil
 }
 
-func (gr *GroupRepositoryMysql) Create(group *entity.Group) error {
+func (gr *GroupRepositoryPostgresql) Create(group *entity.Group) error {
 	sql := `
 		INSERT INTO groups (
 			id,
@@ -90,9 +91,9 @@ func (gr *GroupRepositoryMysql) Create(group *entity.Group) error {
 			created_at,
 			updated_at
 		) VALUES (
-			?,
-			?,
-			?,
+			$1,
+			$2,
+			$3,
 			NOW(),
 			NOW()
 		)
@@ -117,16 +118,16 @@ func (gr *GroupRepositoryMysql) Create(group *entity.Group) error {
 	return nil
 }
 
-func (gr *GroupRepositoryMysql) Update(group *entity.Group) error {
+func (gr *GroupRepositoryPostgresql) Update(group *entity.Group) error {
 	sql := `
 		UPDATE
 			groups
 		SET
-			name = ?,
-			company_id = ?,
+			name = $1,
+			company_id = $2,
 			updated_at = NOW()
 		WHERE
-			id = ?
+			id = $3
 	`
 
 	stmt, err := gr.db.Prepare(sql)
@@ -148,12 +149,12 @@ func (gr *GroupRepositoryMysql) Update(group *entity.Group) error {
 	return nil
 }
 
-func (gr *GroupRepositoryMysql) Delete(id string) error {
+func (gr *GroupRepositoryPostgresql) Delete(id string) error {
 	sql := `
 		UPDATE
 			groups
 		SET deleted_at = NOW()
-		WHERE id = ?
+		WHERE id = $1
 	`
 
 	stmt, err := gr.db.Prepare(sql)

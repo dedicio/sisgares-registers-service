@@ -6,7 +6,7 @@ import (
 
 type PositionRepository interface {
 	FindById(id string) (*Position, error)
-	FindAll() ([]*Position, error)
+	FindAll(companyID string) ([]*Position, error)
 	Create(position *Position) error
 	Update(position *Position) error
 	Delete(id string) error
@@ -14,7 +14,7 @@ type PositionRepository interface {
 
 type GroupRepository interface {
 	FindById(id string) (*Group, error)
-	FindAll() ([]*Group, error)
+	FindAll(companyID string) ([]*Group, error)
 	Create(category *Group) error
 	Update(category *Group) error
 	Delete(id string) error

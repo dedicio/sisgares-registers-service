@@ -15,8 +15,8 @@ func NewListPositionsUseCase(positionRepository entity.PositionRepository) *List
 	}
 }
 
-func (uc ListPositionsUseCase) Execute() ([]*dto.PositionResponseDto, error) {
-	positions, err := uc.Repository.FindAll()
+func (uc ListPositionsUseCase) Execute(companyID string) ([]*dto.PositionResponseDto, error) {
+	positions, err := uc.Repository.FindAll(companyID)
 	if err != nil {
 		return nil, err
 	}

@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/dedicio/sisgares-registers-service/internal/registers/dto"
@@ -23,7 +24,8 @@ func NewCategoryController(categoryRepository entity.CategoryRepository) *Catego
 }
 
 func (cc *CategoryController) FindAll(w http.ResponseWriter, r *http.Request) {
-	categories, err := usecase.NewListCategoriesUseCase(cc.Repository).Execute()
+	companyId := r.Header.Get("X-Company-ID")
+	categories, err := usecase.NewListCategoriesUseCase(cc.Repository, companyId).Execute()
 
 	if err != nil {
 		render.Render(w, r, httpResponsePkg.ErrInternalServerError(err))
@@ -46,15 +48,18 @@ func (cc *CategoryController) FindById(w http.ResponseWriter, r *http.Request) {
 }
 
 func (cc *CategoryController) Create(w http.ResponseWriter, r *http.Request) {
+	companyId := r.Header.Get("X-Company-ID")
+	fmt.Println("Company ID: ", companyId)
 	payload := json.NewDecoder(r.Body)
 	category := dto.CategoryDto{}
-	err := payload.Decode(&category)
 
+	err := payload.Decode(&category)
 	if err != nil {
 		render.Render(w, r, httpResponsePkg.ErrInvalidRequest(err))
 		return
 	}
 
+	category.CompanyId = companyId
 	categorySaved, err := usecase.NewCreateCategoryUseCase(cc.Repository).Execute(category)
 
 	if err != nil {
@@ -70,6 +75,7 @@ func (cc *CategoryController) Create(w http.ResponseWriter, r *http.Request) {
 }
 
 func (cc *CategoryController) Update(w http.ResponseWriter, r *http.Request) {
+	companyId := r.Header.Get("X-Company-ID")
 	payload := json.NewDecoder(r.Body)
 	category := dto.CategoryDto{}
 	err := payload.Decode(&category)
@@ -79,7 +85,7 @@ func (cc *CategoryController) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = usecase.NewUpdateCategoryUseCase(cc.Repository).Execute(category)
+	err = usecase.NewUpdateCategoryUseCase(cc.Repository, companyId).Execute(category)
 
 	if err != nil {
 		render.Render(w, r, httpResponsePkg.ErrInternalServerError(err))

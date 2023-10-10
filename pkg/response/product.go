@@ -19,7 +19,7 @@ func NewProductResponse(product *dto.ProductResponseDto) *ProductResponse {
 }
 
 type ProductsResponse struct {
-	Products []*dto.ProductResponseDto
+	Products []*dto.ProductResponseDto `json:"items"`
 }
 
 func (pr *ProductsResponse) Render(w http.ResponseWriter, r *http.Request) error {
